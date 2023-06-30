@@ -13,34 +13,35 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
 
-  const addImages = async () => {
-    try {
-      setIsLoading(true);
-
-      const data = await API.fetchImages(search, currentPage);
-
-      console.log(data, 'data name');
-      console.log(data.hits, 'data hits');
-
-      if (data.hits.length === 0) {
-        return 'Sorry image not found';
-      }
-
-      const sortedImages = API.sortedImages(data.hits);
-      console.log(sortedImages, 'sortedImages show');
-
-      setImages([...images, ...sortedImages]);
-      setIsLoading(false);
-      setError('');
-      setTotalPages(Math.ceil(data.totalHits / 12));
-    } catch (error) {
-      setError('Something went wrong!');
-      console.log('error adding', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   useEffect(() => {
+    const addImages = async () => {
+      try {
+        setIsLoading(true);
+
+        const data = await API.fetchImages(search, currentPage);
+
+        console.log(data, 'data name');
+        console.log(data.hits, 'data hits');
+
+        if (data.hits.length === 0) {
+          return 'Sorry image not found';
+        }
+
+        const sortedImages = API.sortedImages(data.hits);
+        console.log(sortedImages, 'sortedImages show');
+
+        setImages(prevImages => [...prevImages, ...sortedImages]);
+        setIsLoading(false);
+        setError('');
+        setTotalPages(Math.ceil(data.totalHits / 12));
+      } catch (error) {
+        setError('Something went wrong!');
+        console.log('error adding', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     addImages();
     console.log('addin images');
   }, [search, currentPage]);
@@ -52,9 +53,7 @@ const App = () => {
   };
 
   const loadMore = () => {
-    setCurrentPage(prevState => ({
-      currentPage: prevState.currentPage + 1,
-    }));
+    setCurrentPage(prevState => prevState + 1);
   };
 
   return (
